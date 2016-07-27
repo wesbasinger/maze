@@ -3,10 +3,28 @@ const canvas = document.getElementById('canvas'),
       charCtx = canvas.getContext('2d'),
       bgCtx = canvas.getContext('2d');
 
+var calcDistance = function(d1x, d1y, d2x, d2y) {
+  return Math.pow(((d1x - d2x)*(d1x -d2x)+(d1y - d2y)*(d1y - d2y)), 0.5)
+}
+
 // setting some globals for keypresses
 var rightPressed = false,
     leftPressed = false,
     upPressed = false,
+    downPressed = false,
+    targetReached = false;
+
+var target = {
+  xPos: Math.random() * 640,
+  yPos: Math.random() * 480,
+  make: function() {
+    bgCtx.beginPath();
+    bgCtx.rect(this.xPos, this.yPos, 50, 50);
+    bgCtx.fillStyle = 'blue';
+    bgCtx.fill();
+    bgCtx.closePath();
+  }
+}
 
 var background = {
   color: 'yellow',
@@ -16,39 +34,51 @@ var background = {
     bgCtx.fillStyle = this.color;
     bgCtx.fill();
     bgCtx.closePath();
+    target.make();
   }
 }
 
 // make the character object
 var character = {
   xPos: 0,
-  yPos: canvas.height - 100,
+  yPos: canvas.height - 50,
   place: function() {
     background.make()
     charCtx.beginPath();
-    charCtx.rect(this.xPos, this.yPos, 100, 100);
+    charCtx.rect(this.xPos, this.yPos, 50, 50);
     charCtx.fillStyle = 'black';
     charCtx.fill();
     charCtx.closePath();
   },
   moveRight: function() {
-    this.xPos += 10;
-    if (this.xPos > 640) {
-      background.change();
-      this.xPos = 0;
-      this.place();
-    } else {
-      this.place();
+    if (this.xPos < canvas.width - 50) {
+      this.xPos += 10;
     }
+    this.place();
   },
   moveLeft: function() {
-    this.xPos -= 10;
-    if (this.xPos < 0) {
-      background.change();
-      this.xPos = 640;
-      this.place();
-    } else {
-      this.place();
+    if (this.xPos > 0) {
+      this.xPos -= 10;
+    }
+    this.place();
+  },
+  moveUp: function() {
+    if (this.yPos > 0) {
+      this.yPos -= 10;
+    }
+    this.place();
+  },
+  moveDown: function() {
+    if (this.yPos < canvas.height - 50) {
+      this.yPos += 10;
+    }
+    this.place();
+  },
+  detectTarget: function() {
+    if (calcDistance(target.xPos, target.yPos, this.xPos, this.yPos) < 50) {
+      this.xPos = target.xPos;
+      this.yPos = target.yPos;
+      console.log("target reached!");
     }
   }
 }
@@ -64,6 +94,8 @@ function keyDownHandler(e) {
         leftPressed = true;
     } else if (e.keyCode == 38) {
         upPressed = true;
+    } else if (e.keyCode == 40) {
+        downPressed = true;
     }
 }
 
@@ -75,6 +107,8 @@ function keyUpHandler(e) {
         leftPressed = false;
     } else if (e.keyCode == 38) {
         upPressed = false;
+    } else if (e.keyCode == 40) {
+        downPressed = false;
     }
 }
 
@@ -88,7 +122,12 @@ function draw() {
     character.moveRight();
   } else if (leftPressed) {
     character.moveLeft();
-  } 
+  } else if (upPressed) {
+    character.moveUp();
+  } else if (downPressed) {
+    character.moveDown();
+  }
+  character.detectTarget();
 }
 
 // calling this for the animation effect
