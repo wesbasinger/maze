@@ -1,0 +1,20 @@
+{
+  "name": "maze",
+  "version": "1.0.0",
+  "description": "Just a tiny app that should produce a maze game.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [
+    "fun",
+    "maze",
+    "game",
+    "canvas"
+  ],
+  "author": "Wes Basinger",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
+}
