@@ -13,6 +13,8 @@ var tiles = {
 
 
 var map = {
+  charX: 1,
+  charY: 1,
   grid: [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -47,6 +49,26 @@ var map = {
         ctx.closePath();
       }
     }
+  },
+  moveRight: function() {
+    this.grid[this.charX][this.charY] = 0;
+    this.charX += 1;
+    this.grid[this.charX][this.charY] = 2;
+  },
+  moveLeft: function() {
+    this.grid[this.charX][this.charY] = 0;
+    this.charX -= 1;
+    this.grid[this.charX][this.charY] = 2;
+  },
+  moveUp: function() {
+    this.grid[this.charX][this.charY] = 0;
+    this.charY -= 1;
+    this.grid[this.charX][this.charY] = 2;
+  },
+  moveDown: function() {
+    this.grid[this.charX][this.charY] = 0;
+    this.charY += 1;
+    this.grid[this.charX][this.charY] = 2;
   }
 }
 
@@ -90,6 +112,15 @@ document.addEventListener("keyup", keyUpHandler, false);
 
 // continuous drawing loop;
 function draw() {
+  if (rightPressed && map.charX < 19) {
+    map.moveRight();
+  } else if (leftPressed && map.charX > 0) {
+    map.moveLeft();
+  } else if (downPressed && map.charY < 19) {
+    map.moveDown();
+  } else if (upPressed && map.charY > 0) {
+    map.moveUp();
+  }
   map.make();
   requestAnimationFrame(draw);
 }
