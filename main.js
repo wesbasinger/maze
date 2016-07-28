@@ -8,67 +8,73 @@ const canvas = document.getElementById('canvas'),
 var tiles = {
   0: 'black',
   1: 'red',
-  2: 'blue'
+  2: 'blue',
+  3: 'yellow'
 }
 
 
-var map = {
+var game = {
   charX: 1,
   charY: 1,
-  grid: [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-  ],
+  targetX: Math.floor(Math.random() * 19),
+  targetY: Math.floor(Math.random() * 19),
+  grid: {
+    levelOne: [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ]
+  },
   make: function() {
-    for (var i=0; i < this.grid.length; i++) {
+    this.grid.levelOne[this.targetX][this.targetY] = 1;
+    for (var i=0; i < this.grid.levelOne.length; i++) {
       var row = 16 * i;
-      for (var j=0; j < this.grid[0].length; j++) {
+      for (var j=0; j < this.grid.levelOne[0].length; j++) {
         var col = 16 * j;
         ctx.beginPath();
         ctx.rect(row, col, tileSize, tileSize);
-        ctx.fillStyle = tiles[this.grid[i][j]];
+        ctx.fillStyle = tiles[this.grid.levelOne[i][j]];
         ctx.fill();
         ctx.closePath();
       }
     }
   },
   moveRight: function() {
-    this.grid[this.charX][this.charY] = 0;
+    this.grid.levelOne[this.charX][this.charY] = 0;
     this.charX += 1;
-    this.grid[this.charX][this.charY] = 2;
+    this.grid.levelOne[this.charX][this.charY] = 2;
   },
   moveLeft: function() {
-    this.grid[this.charX][this.charY] = 0;
+    this.grid.levelOne[this.charX][this.charY] = 0;
     this.charX -= 1;
-    this.grid[this.charX][this.charY] = 2;
+    this.grid.levelOne[this.charX][this.charY] = 2;
   },
   moveUp: function() {
-    this.grid[this.charX][this.charY] = 0;
+    this.grid.levelOne[this.charX][this.charY] = 0;
     this.charY -= 1;
-    this.grid[this.charX][this.charY] = 2;
+    this.grid.levelOne[this.charX][this.charY] = 2;
   },
   moveDown: function() {
-    this.grid[this.charX][this.charY] = 0;
+    this.grid.levelOne[this.charX][this.charY] = 0;
     this.charY += 1;
-    this.grid[this.charX][this.charY] = 2;
+    this.grid.levelOne[this.charX][this.charY] = 2;
   }
 }
 
@@ -110,18 +116,19 @@ function keyUpHandler(e) {
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
+
 // continuous drawing loop;
 function draw() {
-  if (rightPressed && map.charX < 19) {
-    map.moveRight();
-  } else if (leftPressed && map.charX > 0) {
-    map.moveLeft();
-  } else if (downPressed && map.charY < 19) {
-    map.moveDown();
-  } else if (upPressed && map.charY > 0) {
-    map.moveUp();
+  if (rightPressed && game.charX < 19) {
+    game.moveRight();
+  } else if (leftPressed && game.charX > 0) {
+    game.moveLeft();
+  } else if (downPressed && game.charY < 19) {
+    game.moveDown();
+  } else if (upPressed && game.charY > 0) {
+    game.moveUp();
   }
-  map.make();
+  game.make();
   requestAnimationFrame(draw);
 }
 
