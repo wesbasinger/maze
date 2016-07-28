@@ -7,6 +7,24 @@ var calcDistance = function(d1x, d1y, d2x, d2y) {
   return Math.pow(((d1x - d2x)*(d1x -d2x)+(d1y - d2y)*(d1y - d2y)), 0.5)
 }
 
+var checkObstacle = function(charObj, obstacleObj) {
+  var brx = charObj.xPos + charObj.width,
+      bry = charObj.yPos + charObj.height,
+      trx = charObj.xPos,
+      _try = charObj.yPos,
+      leftBound = obstacleObj.xPos,
+      topBound = obstacleObj.yPos,
+      leftBound = obstacleObj.xPos,
+      rightBound = obstacleObj.xPos + obstacleObj.width,
+      bottomBound = obstacleObj.yPos + obstacleObj.height;
+  if (
+    (brx >= leftBound && bry >= topBound) &&
+    (trx <= rightBound && _try <= bottomBound)
+  ) {
+    return true;
+  }
+}
+
 // setting some globals for keypresses
 var rightPressed = false,
     leftPressed = false,
@@ -26,6 +44,20 @@ var target = {
   }
 }
 
+var obstacle = {
+  xPos: Math.random() * 640,
+  yPos: Math.random() * 480,
+  width: 50,
+  height: 100,
+  make: function() {
+    bgCtx.beginPath();
+    bgCtx.rect(this.xPos, this.yPos, this.width, this.height);
+    bgCtx.fillStyle = "red";
+    bgCtx.fill();
+    bgCtx.closePath();
+  }
+}
+
 var background = {
   color: 'yellow',
   make: function() {
@@ -35,6 +67,7 @@ var background = {
     bgCtx.fill();
     bgCtx.closePath();
     target.make();
+    obstacle.make();
   }
 }
 
@@ -42,10 +75,12 @@ var background = {
 var character = {
   xPos: 0,
   yPos: canvas.height - 50,
+  width: 50,
+  height: 50,
   place: function() {
     background.make()
     charCtx.beginPath();
-    charCtx.rect(this.xPos, this.yPos, 50, 50);
+    charCtx.rect(this.xPos, this.yPos, this.width, this.height);
     charCtx.fillStyle = 'black';
     charCtx.fill();
     charCtx.closePath();
@@ -78,7 +113,9 @@ var character = {
     if (calcDistance(target.xPos, target.yPos, this.xPos, this.yPos) < 50) {
       this.xPos = target.xPos;
       this.yPos = target.yPos;
-      console.log("target reached!");
+      bgCtx.clearRect(0, 0, canvas.width, canvas.height);
+      bgCtx.font = "40px Arial";
+      bgCtx.fillText("You Win!", 100, 100);
     }
   }
 }
@@ -118,17 +155,19 @@ document.addEventListener("keyup", keyUpHandler, false);
 // continuous drawing loop;
 function draw() {
   character.place();
-  if (rightPressed) {
+  if (rightPressed && !checkObstacle(character, obstacle)) {
     character.moveRight();
-  } else if (leftPressed) {
+  } else if (leftPressed  && !checkObstacle(character, obstacle)) {
     character.moveLeft();
-  } else if (upPressed) {
+  } else if (upPressed && !checkObstacle(character, obstacle)) {
     character.moveUp();
-  } else if (downPressed) {
+  } else if (downPressed && !checkObstacle(character, obstacle)) {
     character.moveDown();
   }
   character.detectTarget();
+  requestAnimationFrame(draw);
 }
 
+
 // calling this for the animation effect
-setInterval(draw, 10);
+draw();

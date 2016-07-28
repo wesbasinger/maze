@@ -4,6 +4,7 @@
   "description": "Just a tiny app that should produce a maze game.",
   "main": "app.js",
   "scripts": {
+    "prestart": "./node_modules/webpack/bin/webpack.js",
     "start": "node app.js"
   },
   "keywords": [
@@ -16,5 +17,8 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.14.0"
+  },
+  "devDependencies": {
+    "webpack": "^1.13.1"
   }
 }
