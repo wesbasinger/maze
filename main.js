@@ -1,6 +1,9 @@
 // grab some globals for drawing on the canvas
+var EventEmitter = require('events').EventEmitter;
 const globals = require('./globals');
 var levels = require('./levels');
+
+var gameEmitter = new EventEmitter();
 
 const ctx = globals.ctx;
 const tileSize = globals.tileSize;
@@ -16,18 +19,19 @@ var tiles = {
 var currentLevel = 1
 
 var game = {
+  currentLevel: 1,
   charX: 1,
   charY: 1,
-  grid: levels[currentLevel],
+  grid: levels,
   make: function() {
-    this.grid[this.charX][this.charY] = 2;
-    for (var i=0; i < this.grid.length; i++) {
+    this.grid[0][this.charX][this.charY] = 2;
+    for (var i=0; i < this.grid[0].length; i++) {
       var row = tileSize * i;
-      for (var j=0; j < this.grid[0].length; j++) {
+      for (var j=0; j < this.grid[0][0].length; j++) {
         var col = tileSize * j;
         ctx.beginPath();
         ctx.rect(row, col, tileSize, tileSize);
-        ctx.fillStyle = tiles[this.grid[i][j]];
+        ctx.fillStyle = tiles[this.grid[0][i][j]];
         ctx.fill();
         ctx.closePath();
       }
@@ -42,43 +46,63 @@ var game = {
     ctx.fillText(`charY: ${[this.charX, this.charY]}`, 200, 20);
   },
   moveRight: function() {
-    if (this.grid[this.charX + 1][this.charY] === 0) {
-      this.grid[this.charX][this.charY] = 0;
+    if (this.grid[0][this.charX + 1][this.charY] === 0) {
+      this.grid[0][this.charX][this.charY] = 0;
       this.charX += 1;
-      this.grid[this.charX][this.charY] = 2;
-    } else if (this.grid[this.charX + 1][this.charY] === 3) {
-      frozen = true;
-      gameEmitter.emit('targetReached');
+      this.grid[0][this.charX][this.charY] = 2;
+    } else if (this.grid[0][this.charX + 1][this.charY] === 3) {
+      this.levelUp();
     }
   },
   moveLeft: function() {
-    if (this.grid[this.charX - 1][this.charY] === 0) {
-      this.grid[this.charX][this.charY] = 0;
+    if (this.grid[0][this.charX - 1][this.charY] === 0) {
+      this.grid[0][this.charX][this.charY] = 0;
       this.charX -= 1;
-      this.grid[this.charX][this.charY] = 2;
-    } else if (this.grid[this.charX - 1][this.charY] === 3) {
-      frozen = true;
+      this.grid[0][this.charX][this.charY] = 2;
+    } else if (this.grid[0][this.charX - 1][this.charY] === 3) {
+      this.levelUp();
     }
   },
   moveUp: function() {
-    if (this.grid[this.charX][this.charY -1] === 0) {
-      this.grid[this.charX][this.charY] = 0;
+    if (this.grid[0][this.charX][this.charY -1] === 0) {
+      this.grid[0][this.charX][this.charY] = 0;
       this.charY -= 1;
-      this.grid[this.charX][this.charY] = 2;
-    } else if (this.grid[this.charX][this.charY -1] === 3) {
-      frozen = true;
+      this.grid[0][this.charX][this.charY] = 2;
+    } else if (this.grid[0][this.charX][this.charY -1] === 3) {
+      this.levelUp();
     }
   },
   moveDown: function() {
-    if (this.grid[this.charX][this.charY + 1] === 0) {
-      this.grid[this.charX][this.charY] = 0;
+    if (this.grid[0][this.charX][this.charY + 1] === 0) {
+      this.grid[0][this.charX][this.charY] = 0;
       this.charY += 1;
-      this.grid[this.charX][this.charY] = 2;
-    } else if (this.grid[this.charX][this.charY + 1] === 3) {
+      this.grid[0][this.charX][this.charY] = 2;
+    } else if (this.grid[0][this.charX][this.charY + 1] === 3) {
+      this.levelUp();
+    }
+  },
+  levelUp: function() {
+    if (this.grid.length === 1) {
+      gameEmitter.emit("gameOver");
+    } else {
+      this.currentLevel ++;
+      gameEmitter.emit('leveledUp', {currentLevel: this.currentLevel})
       frozen = true;
+      this.charX = 1;
+      this.charY = 1;
+      this.grid = this.grid.slice(1);
+      frozen = false;
     }
   }
 }
+
+gameEmitter.on('gameOver', function() {
+  console.log("Game over!");
+});
+
+gameEmitter.on('leveledUp', function(data) {
+  console.log("currentLevel is " + data.currentLevel);
+})
 
 
 // setting some globals for keypresses
