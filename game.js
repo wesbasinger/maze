@@ -128,20 +128,16 @@ var Game = {
         }
     },
     start: function() {
-        // debugger;
         document.addEventListener("keydown", this.keyDownHandler.bind(this));
-        // document.addEventListener("keydown", function(e) {
-        //     console.log("Key down!");
-        // });
-
         this.interval = setInterval((function() {
             this.draw();
         }).bind(this), 90);
+        return this;
     },
     create: function(options) {
         return Object
-        .create(this)
-        .initialize(options);
+            .create(this)
+            .initialize(options);
     },
     cloneLevels(levels) {
         return levels.map(function(level) {
