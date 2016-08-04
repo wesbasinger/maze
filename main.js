@@ -15,6 +15,8 @@ var tiles = {
   3: 'red'
 }
 
+var moveQueue = [];
+
 var game = {
   frozen: false,
   currentLevel: 1,
@@ -22,6 +24,7 @@ var game = {
   charY: 1,
   grid: levels,
   make: function() {
+    debugger;
     this.grid[0][this.charX][this.charY] = 2;
     for (var i=0; i < this.grid[0].length; i++) {
       var row = tileSize * i;
@@ -72,12 +75,13 @@ var game = {
     }
   },
   levelUp: function() {
+    moveQueue = [];
     if (this.grid.length === 1) {
       gameEmitter.emit("gameOver");
     } else {
+      this.frozen = true;
       this.currentLevel ++;
       gameEmitter.emit('leveledUp', {currentLevel: this.currentLevel})
-      this.frozen = true;
       this.charX = 1;
       this.charY = 1;
       this.grid = this.grid.slice(1);
@@ -109,46 +113,41 @@ var rightPressed = false,
 /* Got the next three chunks from the MDN
    tutorial
 */
+
 function keyDownHandler(e) {
     if(e.keyCode == 39) {
-        rightPressed = true;
+        moveQueue.push('right');
     } else if(e.keyCode == 37) {
-        leftPressed = true;
+        moveQueue.push('left');
     } else if (e.keyCode == 38) {
-        upPressed = true;
+        moveQueue.push('up');
     } else if (e.keyCode == 40) {
-        downPressed = true;
-    }
-}
-
-function keyUpHandler(e) {
-    if(e.keyCode == 39) {
-        rightPressed = false;
-    } else if(e.keyCode == 37) {
-        leftPressed = false;
-    } else if (e.keyCode == 38) {
-        upPressed = false;
-    } else if (e.keyCode == 40) {
-        downPressed = false;
+        moveQueue.push('down');
     }
 }
 
 document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
-
 
 // continuous drawing loop;
 function draw() {
-  if (rightPressed && game.charX < 19 && !game.frozen) {
-    game.moveRight();
-  } else if ((leftPressed && game.charX > 0 && !game.frozen)) {
-    game.moveLeft();
-  } else if ((downPressed && game.charY < 19 && !game.frozen)) {
-    game.moveDown();
-  } else if ((upPressed && game.charY > 0 && !game.frozen)) {
-    game.moveUp();
-  }
-  game.make();
+    if(!game.frozen && moveQueue.length > 0) {
+        switch(moveQueue[0]) {
+            case 'right':
+                if(game.charX < 19) game.moveRight();
+                break;
+            case 'left':
+                if(game.charX > 0) game.moveLeft();
+                break;
+            case 'down':
+                if(game.charY < 19) game.moveDown();
+                break;
+            case 'up':
+                if(game.charY > 0) game.moveUp();
+                break;
+        }
+    }
+    moveQueue = [];
+    game.make();
   //requestAnimationFrame(draw);
 }
 
