@@ -3,11 +3,18 @@
   <head>
     <meta charset="utf-8">
     <title>Maze Game</title>
+    <style>
+      td {
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
     <h1>Maze Game</h1>
-    <h2>Get the blue square, stay away from the red.</h2>
-    <canvas id="canvas" width="640" height="480" style="border:1px solid #000000;"></canvas>
+    <h2>Get the red square, stay away from the yellow. Use arrow keys.</h2>
+    <h3>Level: <span id='level'>1</span></h3>
+    <h3 id="messages"></h3>
+    <canvas id="canvas" width="320" height="320" style="border:1px solid #000000;"></canvas>
     <button onclick="location.reload()">Restart</button>
     <script src="bundle.js"></script>
   </body>

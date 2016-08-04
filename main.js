@@ -7,7 +7,6 @@ var gameEmitter = new EventEmitter();
 
 const ctx = globals.ctx;
 const tileSize = globals.tileSize;
-var frozen = false;
 
 var tiles = {
   0: 'black',
@@ -16,9 +15,8 @@ var tiles = {
   3: 'red'
 }
 
-var currentLevel = 1
-
 var game = {
+  frozen: false,
   currentLevel: 1,
   charX: 1,
   charY: 1,
@@ -36,14 +34,6 @@ var game = {
         ctx.closePath();
       }
     }
-    /*  These five lines are debugging code
-     ========================================
-    */
-    ctx.font = '10px Arial';
-    ctx.fillStyle = 'white';
-    ctx.fillText(`charX: ${this.charX}`, 10, 10);
-    ctx.fillText(`charY: ${this.charY}`, 10, 20);
-    ctx.fillText(`charY: ${[this.charX, this.charY]}`, 200, 20);
   },
   moveRight: function() {
     if (this.grid[0][this.charX + 1][this.charY] === 0) {
@@ -87,21 +77,26 @@ var game = {
     } else {
       this.currentLevel ++;
       gameEmitter.emit('leveledUp', {currentLevel: this.currentLevel})
-      frozen = true;
+      this.frozen = true;
       this.charX = 1;
       this.charY = 1;
       this.grid = this.grid.slice(1);
-      frozen = false;
+      this.frozen = false;
     }
   }
 }
 
+var level = document.getElementById('level');
+var messages = document.getElementById('messages');
+
 gameEmitter.on('gameOver', function() {
-  console.log("Game over!");
+  game.frozen = true;
+  messages.innerText = "You win!";
 });
 
 gameEmitter.on('leveledUp', function(data) {
-  console.log("currentLevel is " + data.currentLevel);
+  level.innerText = "";
+  level.innerText = data.currentLevel;
 })
 
 
@@ -141,21 +136,24 @@ function keyUpHandler(e) {
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
+
 // continuous drawing loop;
 function draw() {
-  if (rightPressed && game.charX < 19 && !frozen) {
+  if (rightPressed && game.charX < 19 && !game.frozen) {
     game.moveRight();
-  } else if ((leftPressed && game.charX > 0 && !frozen)) {
+  } else if ((leftPressed && game.charX > 0 && !game.frozen)) {
     game.moveLeft();
-  } else if ((downPressed && game.charY < 19 && !frozen)) {
+  } else if ((downPressed && game.charY < 19 && !game.frozen)) {
     game.moveDown();
-  } else if ((upPressed && game.charY > 0 && !frozen)) {
+  } else if ((upPressed && game.charY > 0 && !game.frozen)) {
     game.moveUp();
   }
   game.make();
-  requestAnimationFrame(draw);
+  //requestAnimationFrame(draw);
 }
 
 
 // calling this for the animation effect
-draw();
+setInterval(function() {
+  draw();
+}, 90);
